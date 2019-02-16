@@ -199,3 +199,6 @@ dmypy.json
 
 # pycharm project setting
 .idea/
+
+########################### ADDITIONAL .GITIGNORE ITEMS ADDED BY SUNGHUN ############################
+/src/data/*

@@ -4,6 +4,7 @@ import pandas as pd
 import re, string, unicodedata
 import contractions
 import inflect
+import nltk
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer

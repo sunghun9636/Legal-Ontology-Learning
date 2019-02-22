@@ -12,6 +12,7 @@ import spacy
 
 # Reference of the preprocessing code: https://www.kdnuggets.com/2018/03/text-data-preprocessing-walkthrough-python.html
 
+
 def replace_contractions(text):
     """Replace contractions in string of text"""
     return contractions.fix(text)
@@ -21,14 +22,24 @@ def replace_ner(text):
     # nlp = spacy.load('en')
     nlp_big = spacy.load('en_core_web_md')
 
-    # document = nlp(text)
-    document_big = nlp_big(text)
+    # entities_big = [e.string for e in document_big.ents if 'PERSON' == e.label_]
+    # entities_big = list(entities_big)
+    # print(entities_big)
 
-    entities_big = [e.string for e in document_big.ents if 'PERSON' == e.label_]
-    entities_big = list(entities_big)
-    print(entities_big)
+    doc = nlp_big(text)
+    redacted_sentence = []
 
-    # return text
+    for ent in doc.ents:
+        ent.merge()
+
+    for token in doc:
+        if token.ent_type_ == "PERSON":
+            redacted_sentence.append("PERSON")
+        else:
+            redacted_sentence.append(token.string)
+
+    print(redacted_sentence)
+    return "".join(redacted_sentence)
 
 
 def tokenize(text):

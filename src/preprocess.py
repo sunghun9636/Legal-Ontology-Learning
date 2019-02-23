@@ -72,7 +72,7 @@ def remove_punctuation(words):
     for word in words:
         new_word = re.sub(r'[^\w\s]', '', word)
         if new_word != '':
-            new_words.append(new_word)
+            new_words.append(new_word.rstrip())  # removing the white_space at the end of the word
     return new_words
 
 
@@ -125,4 +125,5 @@ def normalize(words):
     # words = replace_numbers(words)
     words = remove_stopwords(words)
     words = lemmatize(words)
+    # words = stem_words(words)
     return words

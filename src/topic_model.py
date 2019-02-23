@@ -4,7 +4,7 @@ from data_preparation import remove_low_high_frequent_words, get_tfidf
 
 
 def train_lda_model(num_topics):
-    with open('case_documents.data', 'rb') as file:
+    with open('case_documents_500.data', 'rb') as file:
         # read the data as binary data stream
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
@@ -24,7 +24,7 @@ def train_lda_model(num_topics):
 
 
 def train_svd_model(num_topics):
-    with open('case_documents.data', 'rb') as file:
+    with open('case_documents_10.data', 'rb') as file:
         # read the data as binary data stream
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)

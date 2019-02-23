@@ -3,7 +3,7 @@ from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
 
 
-def remove_low_frequent_words(documents):
+def remove_low_frequent_words(documents, percentage):
     # Checks if documents is a list of lists of strings
     assert type(documents) == list
     assert all(map(lambda x: type(x) == list, documents))
@@ -18,7 +18,8 @@ def remove_low_frequent_words(documents):
             frequency_map[token] += 1
 
     # include words that are in more than 25% of whole documents
-    filtered_documents = [[token for token in text if frequency_map[token] > len(documents)/4] for text in documents]
+    filtered_documents = \
+        [[token for token in text if frequency_map[token] > len(documents)*percentage] for text in documents]
     return filtered_documents
 
 

@@ -202,3 +202,4 @@ dmypy.json
 
 ########################### ADDITIONAL .GITIGNORE ITEMS ADDED BY SUNGHUN ############################
 /src/data/*
+/src/*.data

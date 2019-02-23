@@ -20,7 +20,8 @@ def load_and_preprocess(data_path):
 
     # preprocessing the text
     # for i in range(len(data["casebody"])):
-    for i in range(100):
+    for i in range(10000):
+        print('{} {}'.format('preprocessing data number: ', i))
         data["casebody"][i]["data"] = normalize(text_to_tokens(data["casebody"][i]["data"]))
         output.append(data["casebody"][i]["data"])
 

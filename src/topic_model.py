@@ -1,6 +1,6 @@
 import gensim.models as models
 import pickle
-from data_preparation import remove_low_frequent_words, get_tfidf
+from data_preparation import remove_low_high_frequent_words, get_tfidf
 
 
 def train_lda_model(num_topics):
@@ -9,7 +9,7 @@ def train_lda_model(num_topics):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_frequent_words(documents, 0.10)
+    documents = remove_low_high_frequent_words(documents, 0.1, 0.7)
 
     lda_model = models.ldamodel.LdaModel(corpus=get_tfidf(documents)['corpus_tfidf'],
                                          id2word=get_tfidf(documents)['index2word'],
@@ -29,7 +29,7 @@ def train_svd_model(num_topics):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_frequent_words(documents, 0.10)
+    documents = remove_low_high_frequent_words(documents, 0.1, 0.7)
 
     svd_model = models.LsiModel(corpus=get_tfidf(documents)['corpus_tfidf'],
                                 id2word=get_tfidf(documents)['index2word'],
@@ -40,9 +40,9 @@ def train_svd_model(num_topics):
 
 def main():
     print("RESULT FROM LDA: ")
-    print(train_lda_model(10).print_topics())
+    print(train_lda_model(5).print_topics())
     print("RESULT FROM SVD: ")
-    print(train_svd_model(10).print_topics())
+    print(train_svd_model(5).print_topics())
 
 
 if __name__ == '__main__':

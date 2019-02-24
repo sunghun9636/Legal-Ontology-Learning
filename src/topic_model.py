@@ -40,9 +40,9 @@ def train_svd_model(data, num_topics):
 
 def main():
     print("RESULT FROM LDA: ")
-    print(train_lda_model('data/case_documents_1000.data', 20).print_topics())
+    print(train_lda_model('data/case_documents_10.data', 5).print_topics())
     print("RESULT FROM SVD: ")
-    print(train_svd_model('data/case_documents_1000.data', 20).print_topics())
+    print(train_svd_model('data/case_documents_10.data', 5).print_topics())
 
 
 if __name__ == '__main__':

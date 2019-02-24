@@ -13,6 +13,10 @@ import spacy
 # Reference of the preprocessing code: https://www.kdnuggets.com/2018/03/text-data-preprocessing-walkthrough-python.html
 
 
+def get_opinion_section(text):  # extracting the opinion section from the "data"
+    return text.split("<opinion ", 1)[1]
+
+
 def replace_contractions(text):
     """Replace contractions in string of text"""
     return contractions.fix(text)
@@ -42,7 +46,7 @@ def tokenize(text):
 
 
 def text_to_tokens(text):
-    return replace_ner(replace_contractions(text))
+    return replace_ner(replace_contractions(get_opinion_section(text)))
 
 
 ######################### Dealing with tokens, not text from here ################################

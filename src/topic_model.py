@@ -1,6 +1,7 @@
 import gensim.models as models
 import pickle
 from data_preparation import remove_low_high_frequent_words, get_tfidf
+import pyLDAvis.gensim
 
 
 def train_lda_model(data, num_topics):
@@ -9,18 +10,14 @@ def train_lda_model(data, num_topics):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.25, 0.80)
+    documents = remove_low_high_frequent_words(documents, 0.10, 0.30)
 
     lda_model = models.ldamodel.LdaModel(corpus=get_tfidf(documents)['corpus_tfidf'],
                                          id2word=get_tfidf(documents)['index2word'],
                                          num_topics=num_topics,
-                                         random_state=100,
-                                         update_every=1,
-                                         chunksize=100,
-                                         passes=10,
-                                         alpha='auto',
-                                         per_word_topics=True)
-    return lda_model
+                                         passes=10)
+
+    return lda_model, get_tfidf(documents)['corpus_tfidf'], get_tfidf(documents)['index2word']
 
 
 def train_svd_model(data, num_topics):
@@ -29,20 +26,33 @@ def train_svd_model(data, num_topics):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.25, 0.80)
+    documents = remove_low_high_frequent_words(documents, 0.10, 0.50)
 
     svd_model = models.LsiModel(corpus=get_tfidf(documents)['corpus_tfidf'],
                                 id2word=get_tfidf(documents)['index2word'],
-                                num_topics=num_topics)
+                                num_topics=num_topics,
+                                chunksize=5,
+                                onepass=False,
+                                power_iters=10)
 
     return svd_model
 
 
+def lda_visualization():
+    model, corpus, dictionary = train_lda_model('data/case_documents_1000.data', 10)
+
+    visual = pyLDAvis.gensim.prepare(model, corpus, dictionary)
+    pyLDAvis.save_html(visual, 'visual.html')
+
+
 def main():
-    print("RESULT FROM LDA: ")
-    print(train_lda_model('data/case_documents_10.data', 5).print_topics())
-    print("RESULT FROM SVD: ")
-    print(train_svd_model('data/case_documents_10.data', 5).print_topics())
+    # print("RESULT FROM LDA: ")
+    # print(train_lda_model('data/case_documents_100.data', 10).print_topics())
+    # print("RESULT FROM SVD: ")
+    # print(train_svd_model('data/case_documents_100.data', 10).print_topics())
+
+    # visualization
+    lda_visualization()
 
 
 if __name__ == '__main__':

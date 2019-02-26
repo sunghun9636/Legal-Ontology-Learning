@@ -1,14 +1,12 @@
-import numpy as np
-import pandas as pd
-
 import re, string, unicodedata
 import contractions
 import inflect
-import nltk
+import spacy
+from collections import Counter
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
-import spacy
 
 # Reference of the preprocessing code: https://www.kdnuggets.com/2018/03/text-data-preprocessing-walkthrough-python.html
 
@@ -112,12 +110,25 @@ def stem_words(words):
     return stems
 
 
+def get_pos(word):
+    w_synsets = wordnet.synsets(word)
+
+    pos_counts = Counter()
+    pos_counts["n"] = len([item for item in w_synsets if item.pos() == "n"])
+    pos_counts["v"] = len([item for item in w_synsets if item.pos() == "v"])
+    pos_counts["a"] = len([item for item in w_synsets if item.pos() == "a"])
+    pos_counts["r"] = len([item for item in w_synsets if item.pos() == "r"])
+
+    most_common_pos_list = pos_counts.most_common(3)
+    return most_common_pos_list[0][0]
+
+
 def lemmatize(words):
     """Lemmatize verbs in list of tokenized words"""
     lemmatizer = WordNetLemmatizer()
     lemmas = []
     for word in words:
-        lemma = lemmatizer.lemmatize(word)
+        lemma = lemmatizer.lemmatize(word, get_pos(word))
         lemmas.append(lemma)
     return lemmas
 

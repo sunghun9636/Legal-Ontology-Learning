@@ -1,3 +1,5 @@
+matplotlib
+seaborn
 pyLDAvis
 gensim
 spacy

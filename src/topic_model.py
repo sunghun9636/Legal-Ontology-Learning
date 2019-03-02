@@ -1,5 +1,8 @@
 import gensim.models as models
 import pickle
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from data_preparation import remove_low_high_frequent_words, get_tfidf
 import pyLDAvis.gensim
 
@@ -46,11 +49,24 @@ def train_svd_model(data, num_topics):
 
 def lda_visualization(data, num_topics):
     model, corpus, dictionary = train_lda_model(data, num_topics)
-    print("length of the dictionary is: ")
-    print(len(dictionary))
+    print('{} {}'.format('length of the dictionary is: ', len(dictionary)))
 
     visual = pyLDAvis.gensim.prepare(model, corpus, dictionary)
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
+
+
+def plot_word_importance(model):
+    plt.figure(figsize=(15, 30))
+
+    for i in range(model.get_topics().shape[0]):  # number of topics
+        df = pd.DataFrame(model.show_topic(i), columns=['term', 'prob']).set_index('term')
+
+        plt.subplot(model.get_topics().shape[0]/2, 2, i + 1)  # two plots per row
+        plt.title('topic ' + str(i + 1))
+        sns.barplot(x='prob', y=df.index, data=df, label='Cities', palette='Reds_d')
+        plt.xlabel('probability')
+
+    plt.show()
 
 
 def main():
@@ -59,8 +75,12 @@ def main():
     # print("RESULT FROM SVD: ")
     # print(train_svd_model('data/case_documents_1000.data', 10).print_topics())
 
-    # LDA visualization
-    lda_visualization('data/case_documents_1000.data', 10)
+    # ------------- LDA visualization ---------------- #
+    # lda_visualization('data/case_documents_2500.data', 10)
+
+    # ------------- LDA word importance visualization ---------------- #
+    lda_model = train_lda_model('data/case_documents_2500.data', 10)[0]
+    plot_word_importance(lda_model)
 
 
 if __name__ == '__main__':

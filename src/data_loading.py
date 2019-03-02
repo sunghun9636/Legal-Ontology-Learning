@@ -18,12 +18,12 @@ def load_and_preprocess(data_path):
 
     # preprocessing the text
     # for i in range(len(data["casebody"])):
-    for i in range(2500):
+    for i in range(5000):
         print('{} {}'.format('preprocessing data number: ', i))
         data["casebody"][i]["data"] = normalize(text_to_tokens(data["casebody"][i]["data"]))
         output.append(data["casebody"][i]["data"])
 
-    with open('data/case_documents_2500.data', 'wb') as file:
+    with open('data/case_documents_5000.data', 'wb') as file:
         print("... Saving the pre-processed data into local binary file...")
         # store the data as binary data stream
         pickle.dump(output, file)

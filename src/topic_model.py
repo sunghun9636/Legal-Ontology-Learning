@@ -19,9 +19,26 @@ def train_lda_model(data, num_topics):
     in2word = get_tfidf(documents)["index2word"]
 
     lda_model = models.ldamodel.LdaModel(corpus=corpus,
-                                         id2word=in2word,
                                          num_topics=num_topics,
-                                         passes=10)
+                                         id2word=in2word,
+                                         distributed=False,  # default: False
+                                         chunksize=2000,  # default: 2000
+                                         passes=1,  # default: 1
+                                         update_every=1,  # default: 1
+                                         alpha='symmetric',  # default: 'symmetric'
+                                         eta=None,  # default: None
+                                         decay=0.5,  # default: 0.5
+                                         offset=1.0,  # default: 1.0
+                                         eval_every=10,  # default: 10
+                                         iterations=50,  # default: 50
+                                         gamma_threshold=0.001,  # default: 0.001
+                                         minimum_probability=0.01,  # default: 0.01
+                                         random_state=None,  # default: None
+                                         ns_conf=None,  # default: None
+                                         minimum_phi_value=0.01,  # default: 0.01
+                                         per_word_topics=False,  # default: False
+                                         callbacks=None  # default: None
+                                         )
 
     return lda_model, corpus, in2word
 
@@ -76,11 +93,11 @@ def main():
     # print(train_svd_model('data/case_documents_1000.data', 10).print_topics())
 
     # ------------- LDA visualization ---------------- #
-    # lda_visualization('data/case_documents_2500.data', 10)
+    lda_visualization('data/case_documents_2500.data', 5)
 
     # ------------- LDA word importance visualization ---------------- #
-    lda_model = train_lda_model('data/case_documents_2500.data', 10)[0]
-    plot_word_importance(lda_model)
+    # lda_model = train_lda_model('data/case_documents_2500.data', 10)[0]
+    # plot_word_importance(lda_model)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,10 @@ from nltk.stem import LancasterStemmer, WordNetLemmatizer
 
 
 def get_opinion_section(text):  # extracting the opinion section from the "data" (US case law)
-    return text.split("<opinion ", 1)[1]
+    if "<opinion " in text:
+        return text.split("<opinion ", 1)[1]
+    else:
+        return ""
 
 
 def replace_contractions(text):
@@ -48,7 +51,7 @@ def text_to_tokens(text):
     return replace_ner(replace_contractions(get_opinion_section(text)))
 
 
-######################### Dealing with tokens, not text from here ################################
+# ---------------- Dealing with tokens, not text from here ---------------- #
 
 
 def remove_non_ascii(words):

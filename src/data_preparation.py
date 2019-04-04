@@ -12,7 +12,7 @@ def remove_low_high_frequent_words(documents, lower_limit, upper_limit):
     frequency_map = defaultdict(int)
     for text in documents:
         word_set = set()
-        for token in text:
+        for token in text:  # in order to count A WORD once only per document
             word_set.add(token)
         for token in word_set:
             frequency_map[token] += 1

@@ -47,11 +47,11 @@ def tokenize(text):
     return word_tokenize(text)
 
 
-def text_to_tokens(text):
+def text_to_tokens(text):  # replace_ner function is doing tokenize function as well
     return replace_ner(replace_contractions(get_opinion_section(text)))
 
 
-# ---------------- Dealing with tokens, not text from here ---------------- #
+# ---------------- Dealing with tokens, not text, from here ---------------- #
 
 
 def remove_non_ascii(words):

@@ -40,7 +40,7 @@ def train_h_lda_model(data):
                                  eta=0.1,
                                  seed=0,
                                  verbose=True,
-                                 num_levels=2)
+                                 num_levels=3)
 
     return hlda_model, new_corpus, vocab_index
 

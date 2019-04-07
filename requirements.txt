@@ -1,3 +1,4 @@
+hlda
 matplotlib
 seaborn
 pyLDAvis

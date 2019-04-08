@@ -1,6 +1,8 @@
 import pickle
 import numpy as np
 from gensim.models import Word2Vec
+import scipy.cluster.hierarchy as shc
+import matplotlib.pyplot as plt
 from topic_model import train_lda_model
 from data_preparation import remove_low_high_frequent_words
 
@@ -13,13 +15,16 @@ def get_lda_topics(lda_model):  # return list of (list of terms per topic) from 
     return topics_words
 
 
+# ++++++++++++++++++++++++++++++ Word Embeddings Algorithms +++++++++++++++++++++++++++++++++++ #
+
+
 def sent_vectorizer(sent, model):  # map sentence into vector by averaging words' embeddings from the "model"
     sent_vec = []
     num_words = 0
     for w in sent:
         try:
             if num_words == 0:
-                sent_vec = model[w]
+                sent_vec = model.wv[w]
             else:
                 sent_vec = np.add(sent_vec, model.wv[w])
             num_words += 1
@@ -47,6 +52,18 @@ def self_trained_word2vec(training_corpus, topics_words):
 
     return topics_in_vector  # list of vectors (vector per topic)
 
+# ---------------------------------------------------------------------------------------------- #
+# ++++++++++++++++++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
+
+
+def dendrogram(data):
+    plt.figure(figsize=(10, 7))
+    plt.title("Topics Dendrogram")
+    dendrogram = shc.dendrogram(shc.linkage(data, method='centroid'))  # method='centroid' for k-means clustering
+    plt.show()
+
+# ---------------------------------------------------------------------------------------------- #
+
 
 def main():
     # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
@@ -56,6 +73,8 @@ def main():
 
     print(lda_topics_in_vectors)
     # --------------------------------------------------------------------------- #
+    # ++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
+    dendrogram(lda_topics_in_vectors)  # output dendrogram diagram
 
 
 if __name__ == '__main__':

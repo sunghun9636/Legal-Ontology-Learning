@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from gensim.models import Word2Vec
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import scipy.cluster.hierarchy as shc
 import matplotlib.pyplot as plt
 from topic_model import train_lda_model
@@ -52,6 +53,25 @@ def self_trained_word2vec(training_corpus, topics_words):
 
     return topics_in_vector  # list of vectors (vector per topic)
 
+
+def self_trained_doc2vec(training_corpus, topics_words):
+    with open(training_corpus, 'rb') as file:
+        # read the data as binary data stream
+        print("... Reading the pre-processed data from local binary file...")
+        documents = pickle.load(file)
+
+    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = [" ".join(doc) for doc in documents]
+
+    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(documents)]
+    doc2vec_model = Doc2Vec(documents, vector_size=10, window=2, min_count=1, workers=5)
+
+    topics_in_vector = []
+    for terms_list in topics_words:
+        topics_in_vector.append(doc2vec_model.infer_vector(terms_list))
+
+    return topics_in_vector
+
 # ---------------------------------------------------------------------------------------------- #
 # ++++++++++++++++++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
 
@@ -66,13 +86,19 @@ def dendrogram(data):
 
 
 def main():
-    # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
     lda_model = train_lda_model('data/case_documents_5000.data', 10)[0]
     topic_words = get_lda_topics(lda_model)
-    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_5000.data', topic_words)
 
+    # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
+    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_5000.data', topic_words)
     print(lda_topics_in_vectors)
     # --------------------------------------------------------------------------- #
+
+    # ++++++++++++ LDA topics in vector using self trained doc2vec +++++++++++++ #
+    # lda_topics_in_vectors = self_trained_doc2vec('data/case_documents_5000.data', topic_words)
+    # print(lda_topics_in_vectors)
+    # --------------------------------------------------------------------------- #
+
     # ++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
     dendrogram(lda_topics_in_vectors)  # output dendrogram diagram
 

@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import pyLDAvis
 from gensim.models import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import scipy.cluster.hierarchy as shc
@@ -8,9 +9,14 @@ from topic_model import train_lda_model
 from data_preparation import remove_low_high_frequent_words
 
 
+def get_first_word_probability(elem):
+    return elem[1][0][1]  # getting the probability of the first word of the topic
+
+
 def get_lda_topics(lda_model):  # return list of (list of terms per topic) from lda model
 
     topics = lda_model.show_topics(num_words=20, formatted=False)  # showing the top "num_words" words from each topic
+    topics.sort(key=get_first_word_probability, reverse=True)  # sorting topics by the terms with higher probability
     topic_words = [[word[0] for word in topic[1]] for topic in topics]
 
     return topic_words
@@ -129,11 +135,15 @@ def dendrogram(data):
 
 
 def main():
-    lda_model = train_lda_model('data/case_documents_5000.data', 10)[0]  # LDA topic modelling
-    topic_words = get_lda_topics(lda_model)
+    lda_model, corpus, dictionary = train_lda_model('data/case_documents_5000.data', 10)  # LDA topic modelling
+    visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
+    pyLDAvis.save_html(visual, 'visual/lda_visual.html')
+
+    topic_words = get_lda_topics(lda_model)  # getting the top topic words
+    print(topic_words)
 
     # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
-    # lda_topics_in_vectors = self_trained_word2vec('data/case_documents_5000.data', topic_words)
+    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_5000.data', topic_words)
     # print(lda_topics_in_vectors)
     # --------------------------------------------------------------------------- #
 
@@ -143,7 +153,7 @@ def main():
     # --------------------------------------------------------------------------- #
 
     # ++++++++++++ LDA topics in vector using GloVe +++++++++++++ #
-    lda_topics_in_vectors = glove_word_embeddings(topic_words, 'data/GloVe/glove.6B/glove.6B.200d.txt')
+    # lda_topics_in_vectors = glove_word_embeddings(topic_words, 'data/GloVe/glove.6B/glove.6B.200d.txt')
     # print(lda_topics_in_vectors)
     # ----------------------------------------------------------- #
 

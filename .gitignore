@@ -201,6 +201,5 @@ dmypy.json
 .idea/
 
 ########################### ADDITIONAL .GITIGNORE ITEMS ADDED BY SUNGHUN ############################
-/src/data/*
-/src/*.data
 /src/visual/*
+/src/data/*

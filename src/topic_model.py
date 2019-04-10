@@ -93,7 +93,7 @@ def main():
     # print(train_svd_model('data/case_documents_1000.data', 10).print_topics())
 
     # ------------- LDA visualization ---------------- #
-    lda_visualization('data/case_documents_5000.data', 10)
+    lda_visualization('data/case_documents_20000.data', 10)
 
     # ------------- LDA word importance visualization ---------------- #
     # lda_model = train_lda_model('data/case_documents_5000.data', 10)[0]

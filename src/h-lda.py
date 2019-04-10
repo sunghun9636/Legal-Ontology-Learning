@@ -47,7 +47,7 @@ def train_hlda_model(data):
 def main():
 
     # ------------- h-LDA run sampler ---------------- #
-    hlda_model = train_hlda_model('data/case_documents_5000.data')[0]
+    hlda_model = train_hlda_model('data/case_documents_20000.data')[0]
 
     hlda_model.estimate(num_samples=100,  # default = 500
                         display_topics=10,  # default = 50

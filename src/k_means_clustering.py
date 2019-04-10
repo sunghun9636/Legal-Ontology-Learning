@@ -135,7 +135,7 @@ def dendrogram(data):
 
 
 def main():
-    lda_model, corpus, dictionary = train_lda_model('data/case_documents_5000.data', 10)  # LDA topic modelling
+    lda_model, corpus, dictionary = train_lda_model('data/case_documents_20000.data', 10)  # LDA topic modelling
     visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
 
@@ -143,7 +143,7 @@ def main():
     print(topic_words)
 
     # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
-    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_5000.data', topic_words)
+    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_20000.data', topic_words)
     # print(lda_topics_in_vectors)
     # --------------------------------------------------------------------------- #
 

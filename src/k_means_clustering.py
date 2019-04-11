@@ -125,10 +125,14 @@ def glove_word_embeddings(topic_words, glove_file):
 # ++++++++++++++++++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
 
 
-def dendrogram(data):
+def dendrogram(data, method):
     plt.figure(figsize=(10, 7))
     plt.title("Topics Dendrogram")
-    dendrogram = shc.dendrogram(shc.linkage(data, method='centroid'))  # method='centroid' for k-means clustering
+    dendrogram = shc.dendrogram(shc.linkage(data,
+                                            metric='euclidean',  # 'cosine' for cosine distance
+                                            method=method  # 'centroid' for k-means clustering
+                                            )
+                                )
     plt.show()
 
 # ---------------------------------------------------------------------------------------------- #
@@ -157,8 +161,8 @@ def main():
     # print(lda_topics_in_vectors)
     # ----------------------------------------------------------- #
 
-    # ++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
-    dendrogram(lda_topics_in_vectors)  # output dendrogram diagram
+    # ++++++++++++++ Hierarchical clustering algorithm +++++++++++++++++++++ #
+    dendrogram(lda_topics_in_vectors, 'centroid')  # output dendrogram diagram
 
 
 if __name__ == '__main__':

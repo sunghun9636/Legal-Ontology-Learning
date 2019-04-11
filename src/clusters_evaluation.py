@@ -1,5 +1,6 @@
 import pyLDAvis
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_score
@@ -19,16 +20,14 @@ def agglomerative_clusters_silhouette_score(data, n_clusters, linkage):  # agglo
 
 
 def pca_topics_visualization(data):
-    pca = PCA(n_components=2)  # 2 dimension PCA model
-
+    # ++++++ 3D PCA plots ++++++ #
+    pca = PCA(n_components=3)  # 3 dimension PCA model
     pca.fit(data)
     data_pca = pca.transform(data)
-    # print("original shape: ", data.shape)
-    # print("transformed shape: ", data_pca.shape)
 
     plt.figure(figsize=(10, 7))
-    plt.title("Topics PCA Visualization")
-    plt.scatter(data_pca[:, 0], data_pca[:, 1])
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(data_pca[:, 0], data_pca[:, 1], data_pca[:, 2], c=data_pca[:, 2])
     plt.show()
 
 
@@ -42,10 +41,8 @@ def main():
 
     # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
     lda_topics_in_vectors = self_trained_word2vec('data/case_documents_20000.data', topic_words)
-    # print(lda_topics_in_vectors)
-    # --------------------------------------------------------------------------- #
 
-    # +++++++++++++++++++ Topics PCA visualization +++++++++++++++++++++ #
+    # +++++++++++++++++++ Topics PCA 3D visualization +++++++++++++++++++++ #
     pca_topics_visualization(lda_topics_in_vectors)
 
     # ++++++++++++++ Hierarchical clustering algorithm +++++++++++++++++++++ #

@@ -1,9 +1,12 @@
 import pickle
+import matplotlib.pyplot as plt
 from gensim.corpora import Dictionary
 from gensim.models import Word2Vec
 
-from clusters_evaluation import pca_topics_visualization
+from clusters_evaluation import pca_topics_visualization, agglomerative_clusters_silhouette_score
 from data_preparation import remove_low_high_frequent_words
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.decomposition import PCA
 
 
 def get_corpus_words(data):
@@ -33,10 +36,34 @@ def words_to_self_trained_word2vec(train_data, words):
     return vectors
 
 
+def corpus_words_clustering(words_in_vectors):
+    cluster = AgglomerativeClustering(n_clusters=4, affinity='euclidean', linkage='ward')
+    predictions = cluster.fit_predict(words_in_vectors)
+
+    pca = PCA(n_components=3)  # 3 dimension PCA model
+    pca.fit(words_in_vectors)
+    data_pca = pca.transform(words_in_vectors)
+
+    plt.figure(figsize=(10, 7))
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(data_pca[:, 0], data_pca[:, 1], data_pca[:, 2], c=cluster.labels_, cmap='rainbow')
+    plt.show()
+
+
 def main():
     words = get_corpus_words('data/case_documents_20000.data')
     words_in_vectors = words_to_self_trained_word2vec('data/case_documents_20000.data', words)
-    pca_topics_visualization(words_in_vectors, "")
+    # pca_topics_visualization(words_in_vectors, "")
+
+    corpus_words_clustering(words_in_vectors)
+
+    # ++++++++++++++ Agglomerative Hierarchical clustering evaluation ++++++ #
+    # clustering_methods = ['ward', 'complete', 'average', 'single']  # Agglomerative Clustering Methods
+    for method in ['ward']:
+        for n_clusters in range(2, 10):  # 2 <= n_clusters <= n_topics(10) - 1
+            agglomerative_clusters_silhouette_score(words_in_vectors,
+                                                    n_clusters,
+                                                    method)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score, calinski_harabaz_score
 
-from k_means_clustering import get_lda_topics, self_trained_word2vec, dendrogram, glove_word_embeddings
+from topics_clustering import get_lda_topics, self_trained_word2vec, dendrogram, glove_word_embeddings
 from topic_model import train_lda_model
 
 

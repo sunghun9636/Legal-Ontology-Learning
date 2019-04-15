@@ -55,11 +55,15 @@ def train_svd_model(data, num_topics):
     in2word = get_tfidf(documents)["index2word"]
 
     svd_model = models.LsiModel(corpus=corpus,
-                                id2word=in2word,
                                 num_topics=num_topics,
-                                chunksize=5,
-                                onepass=False,
-                                power_iters=10)
+                                id2word=in2word,
+                                chunksize=5,  # default: 20000
+                                decay=1.0,  # default: 1.0
+                                distributed=False,  # default: False
+                                onepass=True,  # default: True
+                                power_iters=10,  # default: 2
+                                extra_samples=100  # default: 100
+                                )
 
     return svd_model, corpus, in2word
 

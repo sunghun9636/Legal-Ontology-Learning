@@ -1,3 +1,4 @@
+import pickle
 from collections import defaultdict
 from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
@@ -24,6 +25,43 @@ def remove_low_high_frequent_words(documents, lower_limit, upper_limit):
     return filtered_documents
 
 
+def take_second(elem):
+    return elem[1]
+
+
+# According to threshold and using TF-IDF of the terms, get the top keywords of the document
+def get_important_words(document, threshold):
+    # document is list of (index, tf-idf)
+    document.sort(key=take_second, reverse=True)  # reverse sort the document w.r.t tf-idf (reverse order)
+
+    important_words = []
+    for i in range(int(len(document) * threshold)):
+        important_words.append(document[i][0])
+
+    return important_words  # returning the list of important words' index (of the given document)
+
+
+# According to the threshold and using TF-IDF of the terms, remove non-important terms from each & return new documents
+def extract_important_words_tfidf(documents, threshold):
+    dictionary = Dictionary(documents)
+    corpus = [dictionary.doc2bow(text) for text in documents]
+
+    tfidf = TfidfModel(corpus)
+    corpus_tfidf = tfidf[corpus]
+
+    new_documents = []
+
+    for i, doc in enumerate(documents):
+        important_words_index = get_important_words(corpus_tfidf[i], threshold)
+        new_doc = []
+        for term in doc:
+            if dictionary.doc2idx([term])[0] in important_words_index:
+                new_doc.append(term)
+        new_documents.append(new_doc)
+
+    return new_documents  # list of list of terms
+
+
 def get_tfidf(documents):
     # Checks if documents is a list of lists of strings
     assert type(documents) == list
@@ -47,3 +85,16 @@ def get_tfidf(documents):
         "corpus_tfidf": corpus_tfidf,
         "index2word": dictionary
     }
+
+
+def main():
+    with open('data/case_documents_20000.data', 'rb') as file:
+        print("... Reading the pre-processed data from local binary file...")
+        documents = pickle.load(file)
+
+    print(extract_important_words_tfidf(documents, 0.60)[0])
+    print(documents[0])
+
+
+if __name__ == '__main__':
+    main()

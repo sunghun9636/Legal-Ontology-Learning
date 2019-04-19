@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from data_preparation import remove_low_high_frequent_words, get_tfidf
+from data_preparation import remove_low_high_frequent_words, get_tfidf, extract_important_words_tfidf
 import pyLDAvis.gensim
 
 
@@ -13,7 +13,8 @@ def train_lda_model(data, num_topics):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
 
     corpus = get_tfidf(documents)["corpus_tfidf"]
     in2word = get_tfidf(documents)["index2word"]
@@ -26,7 +27,7 @@ def train_lda_model(data, num_topics):
                                          passes=1,  # default: 1
                                          update_every=1,  # default: 1
                                          alpha='symmetric',  # default: 'symmetric'
-                                         eta=None,  # default: None
+                                         eta=0.3,  # default: None
                                          decay=0.5,  # default: 0.5
                                          offset=1.0,  # default: 1.0
                                          eval_every=10,  # default: 10

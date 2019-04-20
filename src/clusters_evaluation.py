@@ -49,7 +49,7 @@ def pca_topics_visualization(data, fig_title):
     plt.show()
 
 
-def word2vec_pca_comparison(documents):
+def word2vec_topics_pca_comparison(documents):
     lda_model, corpus, dictionary = train_lda_model(documents, 10)  # LDA topic modelling
     visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
@@ -92,7 +92,7 @@ def main():
     # for n_clusters in range(2, 10):  # 2 <= n_clusters <= n_topics(10) - 1
     #     kmeans_clusters_silhouette_score(lda_topics_in_vectors,
     #                                      n_clusters)
-    word2vec_pca_comparison('data/case_documents_20000.data')
+    word2vec_topics_pca_comparison('data/case_documents_20000.data')
 
 
 if __name__ == '__main__':

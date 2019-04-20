@@ -6,7 +6,7 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import scipy.cluster.hierarchy as shc
 import matplotlib.pyplot as plt
 from topic_model import train_lda_model
-from data_preparation import remove_low_high_frequent_words
+from data_preparation import remove_low_high_frequent_words, extract_important_words_tfidf
 
 
 def get_first_word_probability(elem):
@@ -65,7 +65,8 @@ def self_trained_word2vec(training_corpus, topic_words):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
 
     # train word2vec model with the documents
     word2vec_model = Word2Vec(documents, size=100, window=10, min_count=1, workers=10)
@@ -83,7 +84,8 @@ def self_trained_doc2vec(training_corpus, topic_words):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
     documents = [" ".join(doc) for doc in documents]
 
     documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(documents)]
@@ -122,7 +124,7 @@ def glove_word_embeddings(topic_words, glove_file):
     return topics_in_vector  # list of vectors (vector per topic)
 
 # ---------------------------------------------------------------------------------------------- #
-# ++++++++++++++++++++++++++++++ Hierarchical K-means clustering algorithm +++++++++++++++++++++ #
+# ++++++++++++++++++++++++++++++ Hierarchical clustering algorithm +++++++++++++++++++++ #
 
 
 def dendrogram(data, method):
@@ -139,7 +141,7 @@ def dendrogram(data, method):
 
 
 def main():
-    lda_model, corpus, dictionary = train_lda_model('data/case_documents_20000.data', 10)  # LDA topic modelling
+    lda_model, corpus, dictionary = train_lda_model('data/case_documents_20000.data', 5)  # LDA topic modelling
     visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
 

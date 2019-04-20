@@ -4,7 +4,7 @@ from gensim.corpora import Dictionary
 from gensim.models import Word2Vec
 
 from clusters_evaluation import pca_topics_visualization, agglomerative_clusters_silhouette_score
-from data_preparation import remove_low_high_frequent_words
+from data_preparation import remove_low_high_frequent_words, extract_important_words_tfidf
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
@@ -15,7 +15,8 @@ def get_corpus_words(data):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
     dictionary = Dictionary(documents)
 
     return dictionary.values()  # returning all words in the data corpus
@@ -27,7 +28,8 @@ def words_to_self_trained_word2vec(train_data, words):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)  # training corpus for word2vec model
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
 
     # train word2vec model with the documents
     word2vec_model = Word2Vec(documents, size=100, window=10, min_count=1, workers=10)

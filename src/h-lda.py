@@ -1,7 +1,7 @@
 import pickle
 from gensim.corpora import Dictionary
 from hlda.sampler import HierarchicalLDA
-from data_preparation import remove_low_high_frequent_words
+from data_preparation import remove_low_high_frequent_words, extract_important_words_tfidf
 
 
 def train_hlda_model(data):
@@ -10,9 +10,10 @@ def train_hlda_model(data):
         print("... Reading the pre-processed data from local binary file...")
         documents = pickle.load(file)
 
-    documents = remove_low_high_frequent_words(documents, 0.15, 0.60)
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
 
-    # ++++++ preparing dictionary and corpus for l-LDA library ++++++ #
+    # ++++++ preparing dictionary and corpus for h-LDA library ++++++ #
     dictionary_set = set()
     for doc in documents:
         for word in doc:

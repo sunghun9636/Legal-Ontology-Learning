@@ -54,6 +54,7 @@ def sent_vectorizer(sent, model):  # map sentence into vector by averaging words
             num_words += 1
         except:
             pass  # if the word is not in the model, skip
+
     print("Number of words found in the model out of ", len(sent), " : ", num_words)
     return np.asarray(sent_vec) / num_words
 
@@ -145,7 +146,7 @@ def main():
     visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
 
-    topic_words = get_lda_topics(lda_model)  # getting the top topic words
+    topic_words = get_lda_topics(lda_model)  # getting the top20 topic words per topic
     for i, topic in enumerate(topic_words):
         print("Topic ", i, ": ", topic)
 

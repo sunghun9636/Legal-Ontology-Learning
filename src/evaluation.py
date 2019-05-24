@@ -7,6 +7,37 @@ from gensim.models import CoherenceModel
 from data_preparation import remove_low_high_frequent_words, get_tfidf, extract_important_words_tfidf
 
 
+def save_train_and_test(data):
+    with open(data, 'rb') as file:
+        # read the data as binary data stream
+        print("... Reading the pre-processed data from local binary file...")
+        documents = pickle.load(file)
+
+    documents = extract_important_words_tfidf(documents, 0.60)  # extracting top 60% (TF-IDF) terms per document
+    documents = remove_low_high_frequent_words(documents, 0.03, 1.0)
+
+    corpus = get_tfidf(documents)["corpus_tfidf"]
+    dictionary = get_tfidf(documents)["index2word"]
+
+    corpus = list(corpus)
+
+    random.shuffle(corpus)
+    train = corpus[:18000]
+    test = corpus[18000:]
+
+    with open('data/train_corpus.data', 'wb') as file:
+        print("...Saving training corpus into local binary file...")
+        pickle.dump(train, file)
+
+    with open('data/test_corpus.data', 'wb') as file:
+        print("...Saving test corpus into local binary file...")
+        pickle.dump(test, file)
+
+    with open('data/common_dictionary.data', 'wb') as file:
+        print("...Saving common dictionary for train and test corpus into binary file...")
+        pickle.dump(dictionary, file)
+
+
 def perplexity(data, limit, start=2, step=1):
     with open(data, 'rb') as file:
         # read the data as binary data stream
@@ -71,15 +102,17 @@ def coherence(data, limit, start=2, step=1):
 
 
 def main():
-    model_list, coherence_values = coherence(data='data/case_documents_20000.data', limit=15, start=2, step=1)
+    # save_train_and_test(data='data/case_documents_20000.data')
+
     limit = 15
     start = 2
     step = 1
+    model_list, coherence_values = coherence(data='data/case_documents_20000.data', limit=limit, start=start, step=step)
     x = range(start, limit, step)
     plt.plot(x, coherence_values)
     plt.xlabel("Num Topics")
-    plt.ylabel("Coherence score")
-    plt.legend("coherence_values", loc='best')
+    plt.ylabel("Coherence Score")
+    plt.legend("coherence_score", loc='best')
     plt.show()
 
     # model_list, perplexity_values = perplexity(data='data/case_documents_20000.data', limit=15, start=2, step=1)

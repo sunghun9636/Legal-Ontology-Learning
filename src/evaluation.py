@@ -101,6 +101,7 @@ def main():
     plt.ylabel("Coherence Score")
     # plt.legend("coherence_score", loc='best')
     plt.show()
+    # ------------------------------------------------------------- #
 
 
 if __name__ == '__main__':

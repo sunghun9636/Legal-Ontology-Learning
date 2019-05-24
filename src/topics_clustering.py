@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
-import pyLDAvis
+import pyLDAvis.gensim
+import gensim.models as models
 from gensim.models import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import scipy.cluster.hierarchy as shc
@@ -15,7 +16,7 @@ def get_first_word_probability(elem):
 
 def get_lda_topics(lda_model):  # return list of (list of terms per topic) from lda model
 
-    topics = lda_model.show_topics(num_words=20, formatted=False)  # showing the top "num_words" words from each topic
+    topics = lda_model.show_topics(num_words=30, formatted=False)  # showing the top "num_words" words from each topic
     topics.sort(key=get_first_word_probability, reverse=True)  # sorting topics by the terms with higher probability
     topic_words = [[word[0] for word in topic[1]] for topic in topics]
 
@@ -142,11 +143,18 @@ def dendrogram(data, method):
 
 
 def main():
-    lda_model, corpus, dictionary = train_lda_model('data/case_documents_20000.data', 5)  # LDA topic modelling
-    visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
+    with open('data/common_dictionary.data', 'rb') as file:
+        dictionary = pickle.load(file)
+    with open('data/train_corpus.data', 'rb') as file:
+        train_corpus = pickle.load(file)
+
+    model = models.ldamodel.LdaModel(corpus=train_corpus, id2word=dictionary, num_topics=5, eta=0.3)
+    print('{} {}'.format('length of the dictionary is: ', len(dictionary)))
+
+    visual = pyLDAvis.gensim.prepare(model, train_corpus, dictionary)
     pyLDAvis.save_html(visual, 'visual/lda_visual.html')
 
-    topic_words = get_lda_topics(lda_model)  # getting the top20 topic words per topic
+    topic_words = get_lda_topics(model)  # getting the top30 topic words per topic
     for i, topic in enumerate(topic_words):
         print("Topic ", i, ": ", topic)
 

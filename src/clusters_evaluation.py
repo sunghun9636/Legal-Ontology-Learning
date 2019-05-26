@@ -1,10 +1,11 @@
-import pyLDAvis
+import pyLDAvis.gensim
+import pickle
+import gensim.models as models
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # this is used for 3-D plotting
 from sklearn.decomposition import PCA
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score, calinski_harabaz_score
-
 from topics_clustering import get_lda_topics, self_trained_word2vec, dendrogram, glove_word_embeddings
 from topic_model import train_lda_model
 
@@ -64,35 +65,44 @@ def word2vec_topics_pca_comparison(documents):
 
 
 def main():
-    # lda_model, corpus, dictionary = train_lda_model('data/case_documents_20000.data', 10)  # LDA topic modelling
-    # visual = pyLDAvis.gensim.prepare(lda_model, corpus, dictionary)  # saving visual presentation of topics
-    # pyLDAvis.save_html(visual, 'visual/lda_visual.html')
-    #
-    # topic_words = get_lda_topics(lda_model)  # getting the top topic words
-    # print(topic_words)
-    #
-    # # ++++++++++++ LDA topics in vector using self trained word2vec ++++++++ #
-    # lda_topics_in_vectors = self_trained_word2vec('data/case_documents_20000.data', topic_words)
-    #
+    with open('data/common_dictionary.data', 'rb') as file:
+        dictionary = pickle.load(file)
+    with open('data/train_corpus.data', 'rb') as file:
+        train_corpus = pickle.load(file)
+
+    model = models.ldamodel.LdaModel(corpus=train_corpus, id2word=dictionary, num_topics=5, eta=0.3)
+    print('{} {}'.format('length of the dictionary is: ', len(dictionary)))
+
+    visual = pyLDAvis.gensim.prepare(model, train_corpus, dictionary)
+    pyLDAvis.save_html(visual, 'visual/lda_visual.html')
+
+    topic_words = get_lda_topics(model)  # getting the top 30 topic words per topic
+    for i, topic in enumerate(topic_words):
+        print("Topic ", i, ": ", topic)
+
+    # ++++++++++++ LDA topics in vector using self trained word2vec +++++++++++++ #
+    lda_topics_in_vectors = self_trained_word2vec('data/case_documents_20000.data', topic_words)
+
     # # +++++++++++++++++++ Topics PCA 3D visualization ++++++++++++++++++++++ #
     # pca_topics_visualization(lda_topics_in_vectors, 'Topics (self-trained-word2vec) 3D PCA')
-    #
-    # # ++++++++++++++ Hierarchical clustering algorithm +++++++++++++++++++++ #
-    # dendrogram(lda_topics_in_vectors, 'ward')  # output dendrogram diagram
-    #
-    # # ++++++++++++++ Agglomerative Hierarchical clustering evaluation ++++++ #
-    # clustering_methods = ['ward', 'complete', 'average', 'single']  # Agglomerative Clustering Methods
-    # for method in clustering_methods:
-    #     for n_clusters in range(2, 10):  # 2 <= n_clusters <= n_topics(10) - 1
-    #         agglomerative_clusters_silhouette_score(lda_topics_in_vectors,
-    #                                                 n_clusters,
-    #                                                 method)
-    #
+
+    # ++++++++++++++ Hierarchical clustering algorithm +++++++++++++++++++++ #
+    dendrogram(lda_topics_in_vectors, 'ward')  # output dendrogram diagram
+
+    # ++++++++++++++ Agglomerative Hierarchical clustering evaluation ++++++ #
+    clustering_methods = ['ward', 'complete', 'average', 'single']  # Agglomerative Clustering Methods
+    for method in clustering_methods:
+        for n_clusters in range(2, 5):  # 2 <= n_clusters <= n_topics(5) - 1
+            agglomerative_clusters_silhouette_score(lda_topics_in_vectors,
+                                                    n_clusters,
+                                                    method)
+
     # # ++++++++++++++ K-Means clustering evaluation +++++++++++++++++++++++++ #
     # for n_clusters in range(2, 10):  # 2 <= n_clusters <= n_topics(10) - 1
     #     kmeans_clusters_silhouette_score(lda_topics_in_vectors,
     #                                      n_clusters)
-    word2vec_topics_pca_comparison('data/case_documents_20000.data')
+
+    # word2vec_topics_pca_comparison('data/case_documents_20000.data')
 
 
 if __name__ == '__main__':
